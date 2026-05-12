@@ -4,6 +4,18 @@
 
 🌐 **[點此進入 Interactive Web Demo (GitHub Pages)](https://Hachi282.github.io/0512DRL_HW3/)**，可以直接在瀏覽器中手動操控 Agent 並視覺化理解各演算法的行為差異！
 
+## 🌍 環境介紹: GridWorld (4x4)
+本專案使用的環境為一個 4x4 的網格世界，包含四種基本物件：
+- **Player (👤)**: Agent 控制的主角。
+- **Goal (⭐)**: 目標，抵達可獲得 **+10 分** 並結束回合。
+- **Pit (🔥)**: 陷阱，掉入會獲得 **-10 分** 並結束回合。
+- **Wall (🧱)**: 障礙物，無法通行。
+- **Step Penalty**: 每走一步（包含撞牆停留在原地）都會獲得 **-1 分** 的懲罰，藉此鼓勵 Agent 尋找最短路徑。
+- **State Representation**: 狀態被表示為一個 64 維度的扁平化陣列（對應不同物件在 4x4 網格中的位置），並加入微小雜訊防止產生全 0 狀態。
+- **Action Space**: 離散的 4 個動作空間（上、下、左、右）。
+
+---
+
 ## 專案結構與執行說明
 
 請確保環境中已安裝相關套件：
@@ -16,7 +28,7 @@ pip install torch torchvision torchaudio pytorch-lightning numpy matplotlib
 ### 🧠 HW3-1: Naive DQN vs. Experience Replay (Static Mode)
 **檔案**: `hw3_1_naive_dqn.py`
 
-在完全靜態的 Gridworld 中（所有物件位置固定），比較了原始 DQN 與加入 Experience Replay 的差異。
+在完全靜態的 Gridworld 中（所有物件位置固定：Player 在左下，Goal 在左上），比較了原始 DQN 與加入 Experience Replay 的差異。
 
 #### 技術與公式解析
 - **Q-Learning 更新公式**:
@@ -27,12 +39,22 @@ pip install torch torchvision torchaudio pytorch-lightning numpy matplotlib
   將所有的 Transition 存入一個容量為 $N$ 的 Buffer 中 $D = \{e_1, \dots, e_N\}$。更新模型時，從 $D$ 中隨機抽取一個 Mini-batch 進行訓練。
   - **優勢**：打破資料的時間相關性（Temporal Correlation），使資料更符合 i.i.d. 假設；並提高資料的使用效率。
 
+#### 訓練參數與實際結果
+- **Hyperparameters**: 
+  - `gamma` = 0.9, `learning_rate` = 1e-3
+  - `epochs` = 1000, `batch_size` = 32, `memory_size` = 1000
+  - `epsilon` (探索率) 從 1.0 隨每步衰減至 0.1 (`decay`=0.999)。
+- **實際訓練結果**: 
+  - Naive DQN 的 Loss 震盪劇烈且不穩定，甚至偶爾會出現突波。
+  - Experience Replay DQN 的 Loss 曲線明顯平滑許多，能穩定收斂並找到目標。
+  ![HW3-1 訓練結果](hw3_1_losses.png)
+
 ---
 
 ### ⚖️ HW3-2: Enhanced DQN Variants (Player Mode)
 **檔案**: `hw3_2_enhanced_dqn.py`
 
-在僅起點隨機的模式下，實作了 Double DQN 與 Dueling DQN 來強化模型的穩定性與收斂速度。
+在「僅玩家起點隨機」的模式下，實作了 Double DQN 與 Dueling DQN 來強化模型的穩定性與收斂速度。
 
 #### 1. Double DQN (DDQN)
 傳統 DQN 常因為 $\max_{a'}$ 操作而發生「Q 值高估 (Overestimation Bias)」。DDQN 透過解耦「動作選擇」與「價值評估」來解決此問題：
@@ -47,14 +69,24 @@ pip install torch torchvision torchaudio pytorch-lightning numpy matplotlib
   $$ Q(s, a; \theta, \alpha, \beta) = V(s; \theta, \beta) + \left( A(s, a; \theta, \alpha) - \frac{1}{|\mathcal{A}|} \sum_{a'} A(s, a'; \theta, \alpha) \right) $$
 - **優勢**：當環境中很多狀態下採取什麼動作並不重要（例如在無障礙的空地），神經網路不需要精確學習每個動作的 Q 值，只需準確評估狀態的價值 $V(s)$ 即可，這大幅加速了訓練。
 
+#### 訓練參數與實際結果
+- **Hyperparameters**: 與 HW3-1 相同，另外增加了 `sync_freq` = 50（每 50 步更新一次 Target Network）。
+- **實際訓練結果**: 
+  - Double DQN 有效抑制了不尋常的超高 Loss。
+  - Dueling DQN 在相同 Epoch 下，由於能更好評估狀態好壞，其 Loss 下降速度與收斂穩定性通常優於一般架構。
+  ![HW3-2 訓練結果](hw3_2_losses.png)
+
 ---
 
 ### 🔁 HW3-3: Enhance DQN for random mode (PyTorch Lightning)
 **檔案**: `hw3_3_lightning_dqn.py`
 
 為了應付全隨機（Random Mode）的高難度環境，我們將模型架構轉換為 **PyTorch Lightning**，並引入了以下訓練穩定技術：
-- **Gradient Clipping (梯度裁剪)**: 防止在複雜環境下 TD Error 過大導致梯度爆炸。
-- **Learning Rate Scheduler (學習率調度器)**: 使用 `StepLR`，隨著 Epoch 增加逐漸降低學習率，讓模型在訓練後期能收斂到更精確的最佳解。
+- **Gradient Clipping (梯度裁剪)**: 防止在複雜環境下 TD Error 過大導致梯度爆炸。設定 `gradient_clip_val=1.0`。
+- **Learning Rate Scheduler (學習率調度器)**: 使用 `StepLR`，每 1000 步將學習率乘上 0.9，讓模型在訓練後期能收斂到更精確的最佳解。
+
+#### 實際訓練結果
+- 由於導入了 Lightning 的 Trainer 管理與梯度裁剪，模型在面臨起點、目標、陷阱與牆壁皆隨機變化的嚴苛環境時，依舊能保持穩定的 Loss 衰減而不會發生 NaN 或爆炸的情況。
 
 ---
 
