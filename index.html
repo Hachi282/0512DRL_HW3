@@ -24,7 +24,15 @@
         <section class="glass-panel" id="hw3-1">
             <div class="section-content">
                 <h2>HW3-1: Naive vs Experience Replay</h2>
-                <p class="desc"><strong>Mode: Static.</strong> 所有的物件都是固定的。觀察 Naive DQN 與具有 Replay Buffer 的 Agent 表現差異。</p>
+                <div class="desc-container">
+                    <p class="desc"><strong>環境模式：Static (完全靜態)</strong></p>
+                    <p class="explanation">在此模式下，主角 (👤)、陷阱 (🔥)、牆壁 (🧱) 與目標 (⭐) 的位置永遠固定。這用來測試基礎演算法能否學會最簡單的路線。</p>
+                    <ul class="features-list">
+                        <li><strong>手動遊玩</strong>：點擊後使用鍵盤 ⬆️⬇️⬅️➡️ 操作。每走一步扣 1 分，陷阱扣 10 分，到達目標得 10 分。</li>
+                        <li><strong>展示 Naive DQN</strong>：模擬無 Experience Replay 的模型。它容易發生「災難性遺忘」，有時會卡在牆角或亂走。</li>
+                        <li><strong>展示 Replay Buffer</strong>：模擬加入經驗回放的模型。能順暢、穩定地找出通往目標的最短路徑。</li>
+                    </ul>
+                </div>
                 <div class="controls">
                     <button class="btn btn-primary" onclick="setMode(1, 'manual')">手動遊玩</button>
                     <button class="btn btn-secondary" onclick="simulateAgent(1, 'naive')">展示 Naive DQN</button>
@@ -40,7 +48,15 @@
         <section class="glass-panel" id="hw3-2">
             <div class="section-content">
                 <h2>HW3-2: Double & Dueling DQN</h2>
-                <p class="desc"><strong>Mode: Player.</strong> 玩家起點隨機。展示進階 DQN 變體如何解決 Q 值高估並加速訓練。</p>
+                <div class="desc-container">
+                    <p class="desc"><strong>環境模式：Player (玩家起點隨機)</strong></p>
+                    <p class="explanation">陷阱與目標固定，但每次主角 (👤) 的出生位置都不同。要求模型具備泛化能力，不能只死記一條路線。</p>
+                    <ul class="features-list">
+                        <li><strong>手動遊玩</strong>：嘗試從不同的隨機起點，找出通往目標的最短安全路徑。</li>
+                        <li><strong>展示 Double DQN</strong>：模擬解耦動作選擇與評估的 Agent，解決了 Q 值高估問題，給出合理移動策略。</li>
+                        <li><strong>展示 Dueling DQN</strong>：模擬分離「狀態價值」與「優勢」的 Agent。能迅速判斷狀態好壞，尋路效率極高。</li>
+                    </ul>
+                </div>
                 <div class="controls">
                     <button class="btn btn-primary" onclick="setMode(2, 'manual')">手動遊玩</button>
                     <button class="btn btn-secondary" onclick="simulateAgent(2, 'double')">展示 Double DQN</button>
@@ -56,7 +72,14 @@
         <section class="glass-panel" id="hw3-3">
             <div class="section-content">
                 <h2>HW3-3: Lightning DQN (Random Mode)</h2>
-                <p class="desc"><strong>Mode: Random.</strong> 所有物件隨機配置。此部分原以 PyTorch Lightning 實作，利用 Learning Rate Scheduler 增加穩定性。</p>
+                <div class="desc-container">
+                    <p class="desc"><strong>環境模式：Random (全隨機模式)</strong></p>
+                    <p class="explanation">所有的物件在每次重置時都會隨機打亂！這是對 DQN 最大的考驗，極易造成訓練過程的梯度爆炸。</p>
+                    <ul class="features-list">
+                        <li><strong>手動遊玩</strong>：親自感受一下每次都要重新尋找目標，還要隨時提防陷阱的壓力。</li>
+                        <li><strong>展示 Lightning 策略</strong>：展示使用 PyTorch Lightning 訓練出的強健策略。透過 <strong>Gradient Clipping</strong> 與 <strong>StepLR</strong>，模型在惡劣條件下依然能保持冷靜找到路徑。</li>
+                    </ul>
+                </div>
                 <div class="controls">
                     <button class="btn btn-primary" onclick="setMode(3, 'manual')">手動遊玩</button>
                     <button class="btn btn-accent" onclick="simulateAgent(3, 'lightning')">展示 Lightning 策略</button>
@@ -71,7 +94,14 @@
         <section class="glass-panel" id="hw3-4">
             <div class="section-content">
                 <h2>HW3-4: Rainbow DQN (Random Mode)</h2>
-                <p class="desc"><strong>Mode: Random.</strong> 結合六大 DQN 改良技術的集大成者。展示在最高難度下的快速尋路。</p>
+                <div class="desc-container">
+                    <p class="desc"><strong>環境模式：Random (全隨機模式)</strong></p>
+                    <p class="explanation">這是最終的 Boss 關卡。我們將展現整合了多項強化學習黑科技的 <strong>Rainbow DQN</strong> 架構威力。</p>
+                    <ul class="features-list">
+                        <li><strong>手動遊玩</strong>：與 HW3-3 相同，純靠人類智慧破解全隨機迷宮。</li>
+                        <li><strong>展示 Rainbow 策略</strong>：模擬結合了 <strong>Noisy Nets (自動探索)</strong>、<strong>Multi-step Return</strong>、<strong>Dueling & Double 架構</strong> 的終極 Agent。它的動作果斷，能以極高效率找到最佳解。</li>
+                    </ul>
+                </div>
                 <div class="controls">
                     <button class="btn btn-primary" onclick="setMode(4, 'manual')">手動遊玩</button>
                     <button class="btn btn-accent" onclick="simulateAgent(4, 'rainbow')">展示 Rainbow 策略</button>
