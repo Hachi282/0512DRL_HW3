@@ -5,6 +5,7 @@ import torch.optim as optim
 import random
 from collections import deque
 import pytorch_lightning as pl
+import matplotlib.pyplot as plt
 
 from Gridworld import Gridworld
 
@@ -69,6 +70,7 @@ class LightningDQN(pl.LightningModule):
         self.epsilon_min = 0.1
         self.epsilon_decay = 0.999
         self.step_count = 0
+        self.losses = []
         
         # Pre-fill buffer
         self.populate_buffer()
@@ -132,6 +134,7 @@ class LightningDQN(pl.LightningModule):
         
         loss = nn.MSELoss()(q_vals, targets)
         self.log('train_loss', loss, prog_bar=True)
+        self.losses.append(loss.item())
         
         # Target Network Sync
         self.step_count += 1
@@ -169,4 +172,12 @@ if __name__ == '__main__':
     
     print("Starting training with PyTorch Lightning (includes LR Scheduling & Grad Clipping)...")
     trainer.fit(model)
-    print("Training finished!")
+    
+    plt.figure(figsize=(10, 5))
+    plt.plot(model.losses, label='Lightning DQN (Random Mode)', alpha=0.6, color='orange')
+    plt.xlabel('Training Steps')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Lightning DQN with Gradient Clipping & StepLR')
+    plt.savefig('hw3_3_losses.png')
+    print("Training finished! Plot saved to hw3_3_losses.png")

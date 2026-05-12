@@ -4,13 +4,14 @@ import torch.nn as nn
 import torch.optim as optim
 import random
 from collections import deque
+import matplotlib.pyplot as plt
 
 from Gridworld import Gridworld
 
 # Hyperparameters
 gamma = 0.99
 learning_rate = 1e-3
-epochs = 2000
+epochs = 300
 max_steps = 50
 batch_size = 32
 memory_size = 2000
@@ -112,6 +113,7 @@ def train_rainbow():
     
     memory = deque(maxlen=memory_size)
     n_step_buffer = deque(maxlen=n_step)
+    losses = []
     
     j = 0
     for epoch in range(epochs):
@@ -186,13 +188,24 @@ def train_rainbow():
                 loss.backward()
                 optimizer.step()
                 
+                losses.append(loss.item())
+                
             if j % sync_freq == 0:
                 target_model.load_state_dict(model.state_dict())
                 
             state = next_state
             step += 1
             
-    print("Training finished!")
+    return losses
 
 if __name__ == '__main__':
-    train_rainbow()
+    losses_rainbow = train_rainbow()
+    
+    plt.figure(figsize=(10, 5))
+    plt.plot(losses_rainbow, label='Rainbow DQN-Lite (Random Mode)', alpha=0.6, color='purple')
+    plt.xlabel('Training Steps')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Rainbow DQN (Multi-step, Dueling, Double, Noisy Nets)')
+    plt.savefig('hw3_4_losses.png')
+    print("Training finished! Plot saved to hw3_4_losses.png")
