@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HW3: DQN and its Variants Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <header class="glass-header">
+        <h1>DQN & GridWorld Interactive Demo</h1>
+        <p>Homework 3: Deep Reinforcement Learning</p>
+    </header>
+
+    <main>
+        <!-- Section 1: Static Mode -->
+        <section class="glass-panel" id="hw3-1">
+            <div class="section-content">
+                <h2>HW3-1: Naive vs Experience Replay</h2>
+                <p class="desc"><strong>Mode: Static.</strong> 所有的物件都是固定的。觀察 Naive DQN 與具有 Replay Buffer 的 Agent 表現差異。</p>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="setMode(1, 'manual')">手動遊玩</button>
+                    <button class="btn btn-secondary" onclick="simulateAgent(1, 'naive')">展示 Naive DQN</button>
+                    <button class="btn btn-accent" onclick="simulateAgent(1, 'replay')">展示 Replay Buffer</button>
+                    <button class="btn btn-danger" onclick="resetBoard(1)">重置環境</button>
+                </div>
+                <div class="status-bar" id="status-1">狀態: 等待指令</div>
+            </div>
+            <div class="grid-container" id="grid-1"></div>
+        </section>
+
+        <!-- Section 2: Player Mode -->
+        <section class="glass-panel" id="hw3-2">
+            <div class="section-content">
+                <h2>HW3-2: Double & Dueling DQN</h2>
+                <p class="desc"><strong>Mode: Player.</strong> 玩家起點隨機。展示進階 DQN 變體如何解決 Q 值高估並加速訓練。</p>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="setMode(2, 'manual')">手動遊玩</button>
+                    <button class="btn btn-secondary" onclick="simulateAgent(2, 'double')">展示 Double DQN</button>
+                    <button class="btn btn-accent" onclick="simulateAgent(2, 'dueling')">展示 Dueling DQN</button>
+                    <button class="btn btn-danger" onclick="resetBoard(2)">重置環境</button>
+                </div>
+                <div class="status-bar" id="status-2">狀態: 等待指令</div>
+            </div>
+            <div class="grid-container" id="grid-2"></div>
+        </section>
+
+        <!-- Section 3: Random Mode (Lightning) -->
+        <section class="glass-panel" id="hw3-3">
+            <div class="section-content">
+                <h2>HW3-3: Lightning DQN (Random Mode)</h2>
+                <p class="desc"><strong>Mode: Random.</strong> 所有物件隨機配置。此部分原以 PyTorch Lightning 實作，利用 Learning Rate Scheduler 增加穩定性。</p>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="setMode(3, 'manual')">手動遊玩</button>
+                    <button class="btn btn-accent" onclick="simulateAgent(3, 'lightning')">展示 Lightning 策略</button>
+                    <button class="btn btn-danger" onclick="resetBoard(3)">重置環境</button>
+                </div>
+                <div class="status-bar" id="status-3">狀態: 等待指令</div>
+            </div>
+            <div class="grid-container" id="grid-3"></div>
+        </section>
+
+        <!-- Section 4: Rainbow DQN -->
+        <section class="glass-panel" id="hw3-4">
+            <div class="section-content">
+                <h2>HW3-4: Rainbow DQN (Random Mode)</h2>
+                <p class="desc"><strong>Mode: Random.</strong> 結合六大 DQN 改良技術的集大成者。展示在最高難度下的快速尋路。</p>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="setMode(4, 'manual')">手動遊玩</button>
+                    <button class="btn btn-accent" onclick="simulateAgent(4, 'rainbow')">展示 Rainbow 策略</button>
+                    <button class="btn btn-danger" onclick="resetBoard(4)">重置環境</button>
+                </div>
+                <div class="status-bar" id="status-4">狀態: 等待指令</div>
+            </div>
+            <div class="grid-container" id="grid-4"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Keyboard controls: Arrow Keys (⬆️ ⬇️ ⬅️ ➡️) for Manual Mode</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
